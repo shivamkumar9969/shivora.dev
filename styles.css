@@ -330,6 +330,16 @@ body.cursor-hover .custom-cursor-ring {
   opacity: 0.4;
 }
 
+.bg-matrix-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 1.0; /* Exact same brightness and visibility as terminal egg */
+  pointer-events: none;
+}
+
 .ambient-gradient {
   position: fixed;
   inset: 0;
@@ -534,6 +544,376 @@ body.cursor-hover .custom-cursor-ring {
   position: relative;
   z-index: 2;
 }
+
+/* Scroll Companion Avatar Container - Target-Bound Skateboarder */
+.scroll-companion-avatar {
+  position: fixed;
+  width: 80px;
+  height: 100px;
+  z-index: 99;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end; /* Torso sits down on the skateboard */
+  filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.4));
+  transition: transform 0.3s ease; /* No transition on top/left to avoid scroll lag */
+  transform-origin: center bottom;
+}
+
+/* Smooth skating transition only active when crossing section thresholds */
+.scroll-companion-avatar.is-skating {
+  transition: top 0.9s cubic-bezier(0.34, 1.3, 0.64, 1), left 0.9s cubic-bezier(0.34, 1.3, 0.64, 1), transform 0.3s ease;
+}
+
+/* Disable transitions entirely during drag and drop */
+.scroll-companion-avatar.is-dragging {
+  transition: none !important;
+}
+
+/* Cursor hover grabs for companion visible elements */
+.scroll-companion-avatar .cyber-character,
+.scroll-companion-avatar .cyber-skateboard,
+.scroll-companion-avatar .avatar-bubble {
+  pointer-events: auto;
+  cursor: grab;
+}
+
+.scroll-companion-avatar.is-dragging .cyber-character,
+.scroll-companion-avatar.is-dragging .cyber-skateboard,
+.scroll-companion-avatar.is-dragging .avatar-bubble {
+  cursor: grabbing;
+}
+
+/* Speech Bubble */
+.avatar-bubble {
+  position: absolute;
+  bottom: 110px; /* Float above the robot head */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 190px;
+  background: rgba(10, 10, 18, 0.96);
+  border: 1.5px solid var(--accent-cyan);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.35), inset 0 0 8px rgba(0, 212, 255, 0.15);
+  opacity: 1;
+  pointer-events: none;
+  animation: bubble-float 3s ease-in-out infinite;
+  z-index: 100;
+  box-sizing: border-box;
+}
+
+/* Target Anchor Points for Companion Avatar */
+.avatar-target {
+  position: relative;
+  display: inline-block;
+  width: 0;
+  height: 0;
+  vertical-align: middle;
+}
+
+/* For main content panels, place target on their left side */
+.skills-visualizer-panel .avatar-target,
+.timeline .avatar-target,
+.projects-grid .avatar-target,
+.achievements-grid .avatar-target {
+  position: absolute;
+  left: -85px; /* Stand 85px to the left of the container */
+  top: 60px;   /* Stand 60px down from the container's top */
+  width: 0;
+  height: 0;
+}
+
+.contact-container .avatar-target {
+  position: absolute;
+  left: -85px;
+  top: 140px;  /* Keep bot lower in transmission section to prevent overlap/cutoff */
+  width: 0;
+  height: 0;
+}
+
+.bubble-arrow {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid var(--accent-cyan);
+}
+
+@keyframes bubble-float {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -4px); }
+}
+
+.bubble-text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.4;
+  color: #00ffcc;
+  text-shadow: 0 0 5px rgba(0, 255, 204, 0.6);
+  word-wrap: break-word;
+}
+
+/* Cyber Hoverboard */
+.cyber-skateboard {
+  position: relative;
+  width: 76px;
+  height: 8px;
+  margin-top: -2px; /* Pull it slightly up to align with feet */
+  z-index: 10;
+}
+
+.skateboard-deck {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  width: 70px;
+  height: 4px;
+  background: var(--accent-cyan);
+  border-radius: 2px;
+  box-shadow: 0 0 12px var(--accent-cyan);
+}
+
+.skateboard-deck::before,
+.skateboard-deck::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 4px;
+  background: var(--accent-cyan);
+}
+
+.skateboard-deck::before {
+  left: -4px;
+  transform: rotate(-15deg);
+  border-radius: 2px 0 0 2px;
+}
+
+.skateboard-deck::after {
+  right: -4px;
+  transform: rotate(15deg);
+  border-radius: 0 2px 2px 0;
+}
+
+/* Hoverboard float pad (replacing wheels) */
+
+/* Rocket Thruster */
+.skateboard-thruster {
+  position: absolute;
+  left: -8px;
+  top: 1px;
+  width: 12px;
+  height: 8px;
+  background: rgba(168, 85, 247, 0.25);
+  border: 1.5px solid var(--accent-violet);
+  border-radius: 2px;
+  box-shadow: 0 0 6px rgba(168, 85, 247, 0.4);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.thruster-fire {
+  position: absolute;
+  right: 12px;
+  width: 20px;
+  height: 8px;
+  background: linear-gradient(270deg, transparent, var(--accent-cyan) 60%, #fff 100%);
+  clip-path: polygon(100% 15%, 0 50%, 100% 85%);
+  opacity: 0;
+  transform: scaleX(0.2);
+  transform-origin: right center;
+  transition: opacity 0.2s, transform 0.2s;
+  filter: drop-shadow(0 0 6px var(--accent-cyan));
+}
+
+/* Active Skating State Animations */
+.scroll-companion-avatar.is-skating .thruster-fire {
+  opacity: 1;
+  transform: scaleX(1.3);
+  animation: thruster-pulse 0.08s infinite alternate;
+}
+
+.scroll-companion-avatar.is-skating.direction-down {
+  transform: rotate(10deg);
+}
+
+.scroll-companion-avatar.is-skating.direction-up {
+  transform: rotate(-10deg);
+}
+
+/* Wheel animations removed */
+
+@keyframes thruster-pulse {
+  0% { transform: scaleX(1) scaleY(0.9); opacity: 0.85; }
+  100% { transform: scaleX(1.4) scaleY(1.1); opacity: 1; }
+}
+
+/* Adjust robot stance on the skateboard */
+.scroll-companion-avatar .cyber-character {
+  height: 76px; /* Let legs sit nicely */
+  transform: translateY(4px);
+}
+
+.scroll-companion-avatar .cyber-character .arm-left {
+  transform: rotate(-25deg);
+  transform-origin: center 3px;
+  transition: transform 0.3s ease;
+}
+
+.scroll-companion-avatar .cyber-character .arm-right {
+  transform: rotate(25deg);
+  transform-origin: center 3px;
+  transition: transform 0.3s ease;
+}
+
+.scroll-companion-avatar .cyber-character .leg-left {
+  transform: rotate(8deg);
+  transition: transform 0.3s ease;
+}
+
+.scroll-companion-avatar .cyber-character .leg-right {
+  transform: rotate(-8deg);
+  transition: transform 0.3s ease;
+}
+
+/* Robot posture when skating */
+.scroll-companion-avatar.is-skating .cyber-character {
+  animation: skate-crouch 0.4s infinite alternate ease-in-out;
+}
+
+.scroll-companion-avatar.is-skating .cyber-character .arm-left {
+  transform: rotate(-45deg);
+}
+
+.scroll-companion-avatar.is-skating .cyber-character .arm-right {
+  transform: rotate(50deg);
+}
+
+.scroll-companion-avatar.is-skating .cyber-character .leg-left {
+  transform: rotate(15deg);
+}
+
+.scroll-companion-avatar.is-skating .cyber-character .leg-right {
+  transform: rotate(-15deg);
+}
+
+@keyframes skate-crouch {
+  0% { transform: translateY(4px) scaleY(1); }
+  100% { transform: translateY(6px) scaleY(0.92); }
+}
+
+.cyber-character {
+  position: relative;
+  width: 50px;
+  height: 85px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateY(2px);
+}
+
+.char-head {
+  width: 18px;
+  height: 18px;
+  background: rgba(10, 10, 15, 0.9);
+  border: 2px solid var(--accent-cyan);
+  border-radius: 50%;
+  position: relative;
+  z-index: 5;
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+}
+
+.char-visor {
+  position: absolute;
+  top: 5px;
+  left: -1px;
+  width: 16px;
+  height: 4px;
+  background: var(--accent-cyan);
+  border-radius: 2px;
+  box-shadow: 0 0 6px var(--accent-cyan);
+}
+
+.char-torso {
+  width: 24px;
+  height: 32px;
+  background: rgba(168, 85, 247, 0.15);
+  border: 2px solid var(--accent-violet);
+  border-radius: 5px;
+  margin-top: 3px;
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+}
+
+.char-chest-logo {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  text-shadow: 0 0 4px var(--accent-cyan);
+  letter-spacing: 0.5px;
+}
+
+.char-arm {
+  position: absolute;
+  top: 23px;
+  width: 5px;
+  height: 24px;
+  background: rgba(0, 212, 255, 0.15);
+  border: 1.5px solid var(--accent-cyan);
+  border-radius: 3px;
+  box-shadow: 0 0 6px rgba(0, 212, 255, 0.25);
+  transform-origin: center 3px;
+}
+
+.arm-left {
+  left: 6px;
+  z-index: 2;
+  transform: rotate(-10deg);
+}
+
+.arm-right {
+  right: 6px;
+  z-index: 5;
+  transform: rotate(10deg);
+}
+
+.char-leg {
+  position: absolute;
+  top: 53px;
+  width: 6px;
+  height: 28px;
+  background: rgba(0, 212, 255, 0.15);
+  border: 1.5px solid var(--accent-cyan);
+  border-radius: 3px;
+  box-shadow: 0 0 6px rgba(0, 212, 255, 0.25);
+  transform-origin: center 3px;
+}
+
+.leg-left {
+  left: 12px;
+  z-index: 2;
+  transform: rotate(12deg);
+}
+
+.leg-right {
+  right: 12px;
+  z-index: 3;
+  transform: rotate(-12deg);
+}
+
+/* Walking animations removed - skateboard has its own skate-crouch and balances */
 
 .identity-status {
   display: flex;
@@ -1100,6 +1480,49 @@ body.cursor-hover .custom-cursor-ring {
   margin-bottom: 0;
 }
 
+/* ─── STICKY STACKED CARDS FOR TIMELINE ─── */
+.timeline-item:nth-of-type(1) { --index: 1; }
+.timeline-item:nth-of-type(2) { --index: 2; }
+.timeline-item:nth-of-type(3) { --index: 3; }
+
+@media (min-width: 769px) and (min-height: 600px) {
+  .timeline {
+    padding-bottom: 25vh; /* Extra scroll space to allow stacking of all cards */
+  }
+
+  .timeline-item {
+    position: sticky;
+    top: calc(100px + var(--index) * 45px);
+    z-index: var(--index);
+    transition: transform 0.3s var(--ease-smooth);
+  }
+
+  /* When hover, dynamically pull the hovered card to the front */
+  .timeline-item:hover {
+    z-index: 99; /* Ensure hovered card goes to the very top */
+  }
+
+  /* Disable hover z-index hijacking during active scroll */
+  body.is-scrolling .timeline-item {
+    pointer-events: none;
+  }
+
+  .timeline-card {
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    transform-origin: top center;
+    /* Create a deck layering scale effect: lower index cards are scaled down slightly */
+    transform: scale(calc(1 - (3 - var(--index)) * 0.025));
+    transition: transform 0.4s var(--ease-spring), border-color 0.4s, box-shadow 0.4s;
+  }
+
+  /* Reveal a premium visual feedback on active hovered item */
+  .timeline-item:hover .timeline-card {
+    transform: scale(1.02) translateX(8px);
+    border-color: rgba(0, 212, 255, 0.45);
+    box-shadow: 0 25px 60px rgba(0, 212, 255, 0.15), 0 0 0 1px rgba(0, 212, 255, 0.1);
+  }
+}
+
 .timeline-dot {
   position: absolute;
   left: -33px;
@@ -1456,6 +1879,7 @@ body.cursor-hover .custom-cursor-ring {
 }
 
 .projects-grid {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 24px;
@@ -1706,6 +2130,7 @@ body.cursor-hover .custom-cursor-ring {
    SECTION 5: ACHIEVEMENTS VAULT
    ═══════════════════════════════════════════════════════════════ */
 .achievements-grid {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 40px;
@@ -1862,6 +2287,7 @@ body.cursor-hover .custom-cursor-ring {
    SECTION 6: CONTACT (Transmission)
    ═══════════════════════════════════════════════════════════════ */
 .contact-container {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr 1.5fr;
   gap: 40px;
@@ -2738,6 +3164,12 @@ body.cursor-hover .custom-cursor-ring {
     width: 90px;
     height: 90px;
     font-size: 1.8rem;
+  }
+
+  .scroll-companion-track,
+  .scroll-companion-avatar,
+  .avatar-seat {
+    display: none !important;
   }
 
   .timeline {

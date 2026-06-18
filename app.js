@@ -23,6 +23,8 @@
     terminalCmdHistory: [],
     konamiProgress: 0,
     matrixActive: false,
+    bgMatrixInitialized: false,
+    companionDragOffset: null,
   };
 
   const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
@@ -109,7 +111,7 @@
       content.classList.add('visible');
       nameEl.textContent = 'SHIVAM KUMAR';
       await sleep(400);
-      roleEl.textContent = 'SENIOR WEB DEVELOPER';
+      roleEl.textContent = 'SENIOR FULL-STACK DEVELOPER';
       roleEl.classList.add('visible');
       await sleep(600);
       progressEl.classList.add('visible');
@@ -174,6 +176,7 @@
       initScrollObserver();
       initDock();
       initScrollProgress();
+      initCompanionDraggable();
     }, 300);
   }
 
@@ -254,6 +257,85 @@
   }
 
   // ═══════════════════════════════════════════════════════════════
+  // AMBIENT BACKGROUND MATRIX RAIN (Runs continuously, every 20s)
+  // ═══════════════════════════════════════════════════════════════
+  function initBgMatrixCanvas() {
+    if (state.bgMatrixInitialized) return;
+    state.bgMatrixInitialized = true;
+
+    const canvas = $('#bg-matrix-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{}|;:<>?シヴァムクマル';
+    const fontSize = 14;
+    let columns = Math.floor(canvas.width / fontSize);
+    let drops = [];
+
+    function resetDrops() {
+      columns = Math.floor(canvas.width / fontSize);
+      drops = new Array(columns);
+      for (let i = 0; i < columns; i++) {
+        drops[i] = Math.floor(Math.random() * -25); // staggered starts off-screen
+      }
+    }
+    resetDrops();
+
+    window.addEventListener('resize', () => {
+      resetDrops();
+    });
+
+    let lastReset = Date.now();
+
+    function draw() {
+      const now = Date.now();
+      const elapsed = now - lastReset;
+
+      if (elapsed >= 20000) {
+        // Clear canvas before starting the new wave to ensure no ghost text remains
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Restart wave
+        lastReset = now;
+        resetDrops();
+      }
+
+      if (elapsed < 4000) {
+        // Use destination-out to fade previous frames transparently (no dark background box!)
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.08)'; // controls trail fade out speed
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.globalCompositeOperation = 'source-over';
+
+        ctx.font = fontSize + 'px monospace';
+
+        drops.forEach((y, i) => {
+          if (y >= 0 && y * fontSize <= canvas.height) {
+            const char = chars[Math.floor(Math.random() * chars.length)];
+            // Exact same teal-cyan color scheme as terminal matrix rain
+            ctx.fillStyle = Math.random() > 0.98 ? '#fff' : `hsl(${160 + Math.random() * 40}, 100%, ${50 + Math.random() * 30}%)`;
+            ctx.fillText(char, i * fontSize, y * fontSize);
+          }
+          drops[i]++; // Increments every single frame for exact matching speed!
+        });
+      } else {
+        // Clear canvas completely on every frame during the pause state to remove all text remnants
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  }
+
+  // ═══════════════════════════════════════════════════════════════
   // CUSTOM CURSOR
   // ═══════════════════════════════════════════════════════════════
   function initCursor() {
@@ -284,7 +366,7 @@
     animateRing();
 
     // Hover states
-    const hoverables = 'a, button, input, textarea, .dock-item, .project-card-inner, .skill-node, .timeline-card, .award-card, .cert-card, .social-orb, .filter-btn, .signal-link, .cta-button';
+    const hoverables = 'a, button, input, textarea, .dock-item, .project-card-inner, .skill-node, .timeline-card, .award-card, .cert-card, .social-orb, .filter-btn, .signal-link, .cta-button, .cyber-character, .cyber-skateboard, .avatar-bubble';
 
     document.addEventListener('mouseover', e => {
       if (e.target.closest(hoverables)) {
@@ -361,29 +443,264 @@
     );
 
     $$('.section').forEach(el => sectionObserver.observe(el));
+
+  }
+
+  const companionMessages = {
+    identity: () => {
+      const hours = new Date().getHours();
+      let greeting = 'Good Morning';
+      if (hours >= 12 && hours < 17) greeting = 'Good Afternoon';
+      else if (hours >= 17 && hours < 22) greeting = 'Good Evening';
+      else if (hours >= 22 || hours < 5) greeting = 'Good Late Night';
+      return `${greeting}! I'm Shivora, Shivam's companion bot. Scroll down and I'll skate along with you!`;
+    },
+    skills: () => "SHIVORA // COGNITIVE_SCAN: Node core active. Skills listed: Laravel, PHP, JS, SQL. 100% database integrity.",
+    experience: () => "SHIVORA // TIMELINE_LOG: Experience logs active. Verifying GKU & Rackron developer roles... verified.",
+    projects: () => "SHIVORA // PROJECTS_LAB: Indexing portfolio builds. Reviewing gkuonline.in & admissions portal codebases.",
+    achievements: () => "SHIVORA // HONORS_VAULT: Cyber-accolades loaded. Hackathons, certifications, and awards verified.",
+    contact: () => "SHIVORA // COM_LINK: Signal open. Feed variables to form input nodes to send transmission directly."
+  };
+
+  let typewriterInterval;
+  function updateCompanionMessage(sectionId) {
+    const bubbleText = document.querySelector('#scroll-companion-avatar .bubble-text');
+    if (bubbleText) {
+      const shortName = sectionId.replace('section-', '');
+      if (companionMessages[shortName]) {
+        const messageText = companionMessages[shortName]();
+        
+        // Character typewriter printing animation (terminal/movie style)
+        clearInterval(typewriterInterval);
+        bubbleText.textContent = '';
+        let i = 0;
+        typewriterInterval = setInterval(() => {
+          if (i < messageText.length) {
+            bubbleText.textContent += messageText.charAt(i);
+            i++;
+          } else {
+            clearInterval(typewriterInterval);
+          }
+        }, 15); // Fast and snappy character typing speed
+      }
+    }
+  }
+
+  function updateCompanionPosition(sectionId, animate = true) {
+    const container = $('#scroll-container');
+    const target = document.querySelector(`#${sectionId} .avatar-target`);
+    const companion = $('#scroll-companion-avatar');
+    if (target && companion && container) {
+      const targetRect = target.getBoundingClientRect();
+      
+      // Calculate coordinates relative to the viewport (fixed position)
+      let targetLeft, targetTop;
+      let minLeft = 80;
+      let minTop = 140;
+
+      if (state.companionDragOffset) {
+        targetLeft = targetRect.left + state.companionDragOffset.x;
+        targetTop = targetRect.top + state.companionDragOffset.y;
+        minLeft = 50; // more permissive when user customized it
+        minTop = 100;
+      } else {
+        targetTop = targetRect.top - 90;
+        targetLeft = targetRect.left - 40;
+        
+        // Custom offset for Identity section to sit neatly to the right of "Shivam Kumar" name
+        if (sectionId === 'section-identity') {
+          targetLeft += 80;
+          targetTop += 12;
+        }
+      }
+      
+      // Clamp targetLeft to ensure the speech bubble (190px width) does not get cut off
+      if (targetLeft < minLeft) {
+        targetLeft = minLeft;
+      }
+      
+      // Clamp targetTop to prevent skateboarder from scrolling off-screen vertically.
+      const maxTop = window.innerHeight * 0.85;
+      if (targetTop < minTop) targetTop = minTop;
+      if (targetTop > maxTop) targetTop = maxTop;
+      
+      const currentTop = parseFloat(companion.style.top) || 0;
+      const direction = targetTop > currentTop ? 'down' : 'up';
+      
+      if (!animate) {
+        companion.style.transition = 'none';
+        companion.style.top = targetTop + 'px';
+        companion.style.left = targetLeft + 'px';
+        companion.offsetHeight; // force reflow
+        companion.style.transition = '';
+        return;
+      }
+      
+      companion.style.top = targetTop + 'px';
+      companion.style.left = targetLeft + 'px';
+      
+      companion.classList.add('is-skating');
+      if (direction === 'down') {
+        companion.classList.add('direction-down');
+        companion.classList.remove('direction-up');
+      } else {
+        companion.classList.add('direction-up');
+        companion.classList.remove('direction-down');
+      }
+      
+      clearTimeout(companion.skateTimeout);
+      companion.skateTimeout = setTimeout(() => {
+        companion.classList.remove('is-skating');
+        companion.classList.remove('direction-down');
+        companion.classList.remove('direction-up');
+      }, 900); // matches transition duration
+    }
   }
 
   function updateActiveSection(sectionId) {
+    if (state.activeSection === sectionId) return;
     state.activeSection = sectionId;
     $$('.dock-item').forEach(item => {
       item.classList.toggle('active', item.dataset.target === sectionId);
     });
+
+    updateCompanionPosition(sectionId, true);
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // SCROLL PROGRESS BAR
+  // SCROLL PROGRESS BAR & TIMELINE SCROLL HANDLER
   // ═══════════════════════════════════════════════════════════════
   function initScrollProgress() {
     const container = $('#scroll-container');
     const fill = $('#reading-progress-fill');
     if (!container || !fill) return;
 
+    let isScrollingTimeout;
+
+    // Initial position and greeting on load after layout settles
+    setTimeout(() => {
+      updateCompanionPosition(state.activeSection, false);
+      updateCompanionMessage(state.activeSection);
+    }, 600);
+
     container.addEventListener('scroll', () => {
       const scrollTop = container.scrollTop;
       const scrollHeight = container.scrollHeight - container.clientHeight;
-      const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
-      fill.style.width = progress + '%';
+      const progressRatio = scrollHeight > 0 ? (scrollTop / scrollHeight) : 0;
+      
+      fill.style.width = (progressRatio * 100) + '%';
+
+      // Temporarily disable hover pointer events on scroll to prevent hover z-index hijacking
+      document.body.classList.add('is-scrolling');
+      clearTimeout(isScrollingTimeout);
+      isScrollingTimeout = setTimeout(() => {
+        document.body.classList.remove('is-scrolling');
+        // Scrolling has stopped! Now trigger the typewriter message for the current active section
+        updateCompanionMessage(state.activeSection);
+      }, 150);
+
+      // Lock companion position to target on scroll when NOT transitioning between sections
+      const companion = $('#scroll-companion-avatar');
+      if (companion && !companion.classList.contains('is-skating')) {
+        updateCompanionPosition(state.activeSection, false);
+      }
     });
+
+    // Handle resize
+    window.addEventListener('resize', () => {
+      updateCompanionPosition(state.activeSection, false);
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // DRAGGABLE ROBOT COMPANION
+  // ═══════════════════════════════════════════════════════════════
+  function initCompanionDraggable() {
+    const companion = $('#scroll-companion-avatar');
+    if (!companion) return;
+
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let initialLeft = 0;
+    let initialTop = 0;
+
+    const dragTargets = companion.querySelectorAll('.cyber-character, .cyber-skateboard, .avatar-bubble');
+    dragTargets.forEach(el => {
+      el.addEventListener('mousedown', dragStart);
+      el.addEventListener('touchstart', dragStart, { passive: false });
+    });
+
+    function dragStart(e) {
+      if (e.type === 'mousedown' && e.button !== 0) return;
+      
+      e.preventDefault();
+      isDragging = true;
+      companion.classList.add('is-dragging');
+
+      const rect = companion.getBoundingClientRect();
+      initialLeft = rect.left;
+      initialTop = rect.top;
+
+      const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+      const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+      
+      startX = clientX;
+      startY = clientY;
+
+      document.addEventListener('mousemove', dragMove, { passive: false });
+      document.addEventListener('touchmove', dragMove, { passive: false });
+      document.addEventListener('mouseup', dragEnd);
+      document.addEventListener('touchend', dragEnd);
+    }
+
+    function dragMove(e) {
+      if (!isDragging) return;
+      e.preventDefault();
+
+      const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+      const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+      const deltaX = clientX - startX;
+      const deltaY = clientY - startY;
+
+      let newLeft = initialLeft + deltaX;
+      let newTop = initialTop + deltaY;
+
+      // safety clamping
+      const minLeft = 50;
+      const maxLeft = window.innerWidth - 100;
+      const minTop = 100;
+      const maxTop = window.innerHeight - 120;
+
+      if (newLeft < minLeft) newLeft = minLeft;
+      if (newLeft > maxLeft) newLeft = maxLeft;
+      if (newTop < minTop) newTop = minTop;
+      if (newTop > maxTop) newTop = maxTop;
+
+      companion.style.top = newTop + 'px';
+      companion.style.left = newLeft + 'px';
+
+      const target = document.querySelector(`#${state.activeSection} .avatar-target`);
+      if (target) {
+        const targetRect = target.getBoundingClientRect();
+        state.companionDragOffset = {
+          x: newLeft - targetRect.left,
+          y: newTop - targetRect.top
+        };
+      }
+    }
+
+    function dragEnd() {
+      if (!isDragging) return;
+      isDragging = false;
+      companion.classList.remove('is-dragging');
+
+      document.removeEventListener('mousemove', dragMove);
+      document.removeEventListener('touchmove', dragMove);
+      document.removeEventListener('mouseup', dragEnd);
+      document.removeEventListener('touchend', dragEnd);
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -671,7 +988,7 @@
       '',
       '  ┌──────────────────────────────────────┐',
       '  │  Shivam Kumar                        │',
-      '  │  Senior Web Developer                │',
+      '  │  Senior Full-Stack Developer           │',
       '  │  Full-Stack | MERN | Laravel | AWS   │',
       '  │  github.com/shivamkumar9969         │',
       '  └──────────────────────────────────────┘',
@@ -714,11 +1031,11 @@
     experience: () => [
       '',
       '  🏢 Guru Kashi University',
-      '     Senior Web Developer │ Dec 2025 — Present',
+      '     Senior Full-Stack Developer │ Dec 2025 — Present',
       '     → React, Node.js, Laravel, PHP, Databases',
       '',
       '  🏢 Rackron Technologies Pvt Ltd',
-      '     Software Developer │ June 2024 — Dec 2025',
+      '     Backend Developer │ June 2024 — Dec 2025',
       '     → Node.js, Laravel, MERN, AWS',
       '',
       '  🎓 DevTown',
@@ -739,6 +1056,8 @@
     'ls projects': () => [
       '',
       '  drwxr-xr-x  gku-portal/',
+      '  drwxr-xr-x  gku-online/',
+      '  drwxr-xr-x  gku-admission/',
       '  drwxr-xr-x  flax-collective/',
       '  drwxr-xr-x  amazon-repricer/',
       '  drwxr-xr-x  crypto-automation/',
@@ -749,7 +1068,7 @@
       '  drwxr-xr-x  defiance-system/',
       '  drwxr-xr-x  education-admin/',
       '',
-      '  10 directories',
+      '  12 directories',
       '',
     ],
 
@@ -1463,6 +1782,7 @@
   function init() {
     initCursor();
     initBgCanvas();
+    initBgMatrixCanvas();
     initBootSequence();
     initCardTilt();
     initProjectFilters();

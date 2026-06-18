@@ -4,10 +4,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shivam Kumar — Senior Web Developer | NEXUS Portfolio</title>
+  <title>Shivam Kumar — Senior Full-Stack Developer | NEXUS Portfolio</title>
   <meta name="description"
-    content="Shivam Kumar — Senior Web Developer specializing in Node.js, Laravel, Next.js, and scalable backend architectures. Explore an immersive digital identity experience." />
-  <meta name="keywords" content="Shivam Kumar, Web Developer, Full Stack, MERN, Laravel, Portfolio" />
+    content="Shivam Kumar — Senior Full-Stack Developer specializing in Node.js, Laravel, Next.js, and scalable backend architectures. Explore an immersive digital identity experience." />
+  <meta name="keywords" content="Shivam Kumar, Full-Stack Developer, MERN, Laravel, Portfolio" />
   <meta name="author" content="Shivam Kumar" />
   <meta name="theme-color" content="#0a0a0f" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -78,11 +78,43 @@
     <!-- Background Canvas (Neural Network Ambient) -->
     <canvas id="bg-canvas" class="bg-canvas" aria-hidden="true"></canvas>
 
+    <!-- Background Matrix Canvas (Subtle 6s Sweeping Wave Effect) -->
+    <canvas id="bg-matrix-canvas" class="bg-matrix-canvas" aria-hidden="true"></canvas>
+
     <!-- Ambient gradient overlay -->
     <div class="ambient-gradient" aria-hidden="true"></div>
 
     <!-- ─── SCROLLABLE CONTENT ─── -->
     <div id="scroll-container" class="scroll-container">
+
+      <!-- SKATEBOARDER SCROLL COMPANION AVATAR -->
+      <div id="scroll-companion-avatar" class="scroll-companion-avatar" aria-hidden="true">
+        <!-- Speech Bubble -->
+        <div class="avatar-bubble">
+          <div class="bubble-text">SHIVORA: Hello.</div>
+          <div class="bubble-arrow"></div>
+        </div>
+        <div class="cyber-character">
+          <div class="char-head">
+            <div class="char-visor"></div>
+          </div>
+          <div class="char-torso">
+            <div class="char-chest-logo">SK</div>
+          </div>
+          <div class="char-arm arm-left"></div>
+          <div class="char-arm arm-right"></div>
+          <div class="char-leg leg-left"></div>
+          <div class="char-leg leg-right"></div>
+        </div>
+        <!-- CYBER SKATEBOARD -->
+        <div class="cyber-skateboard">
+          <div class="skateboard-deck"></div>
+
+          <div class="skateboard-thruster">
+            <div class="thruster-fire"></div>
+          </div>
+        </div>
+      </div>
 
       <!-- ══════════════════════════════════════════ -->
       <!-- SECTION 1: IDENTITY (About) -->
@@ -112,10 +144,13 @@
                   <span class="greeting-line"></span>
                   <span class="greeting-text">Hello, World. I'm</span>
                 </div>
-                <h1 class="identity-name reveal-item" data-delay="100">Shivam Kumar</h1>
+                <h1 class="identity-name reveal-item" data-delay="100">
+                  Shivam Kumar
+                  <span class="avatar-target" data-section="identity"></span>
+                </h1>
                 <p class="identity-role reveal-item" data-delay="200">
                   <span class="role-bracket">{</span>
-                  Senior Web Developer
+                  Senior Full-Stack Developer
                   <span class="role-bracket">}</span>
                 </p>
                 <p class="identity-bio reveal-item" data-delay="300">
@@ -201,6 +236,7 @@
           <div class="skills-container-2050 reveal-item">
             <!-- Left: Interactive Visualizer -->
             <div class="skills-visualizer-panel">
+              <span class="avatar-target" data-section="skills"></span>
               <div class="visualizer-hud-overlay">
                 <span class="hud-status-text"><span class="scanner-laser"></span>INTERACTIVE 3D NEURAL COGNITION
                   SYSTEM</span>
@@ -269,6 +305,7 @@
             <p class="section-subtitle">Work Experience</p>
           </div>
           <div class="timeline">
+            <span class="avatar-target" data-section="experience"></span>
             <div class="timeline-line" aria-hidden="true"></div>
 
             <!-- Experience 1 -->
@@ -287,7 +324,7 @@
                 <div class="timeline-header">
                   <div>
                     <h3 class="timeline-company">Guru Kashi University</h3>
-                    <p class="timeline-role">Senior Web Developer</p>
+                    <p class="timeline-role">Senior Full-Stack Developer</p>
                   </div>
                   <div class="timeline-meta">
                     <span class="timeline-badge active-badge">
@@ -341,7 +378,7 @@
                 <div class="timeline-header">
                   <div>
                     <h3 class="timeline-company">Rackron Technologies Pvt Ltd</h3>
-                    <p class="timeline-role">Software Developer</p>
+                    <p class="timeline-role">Backend Developer</p>
                   </div>
                   <div class="timeline-meta">
                     <span class="timeline-date">June 2024 — Dec 2025</span>
@@ -467,6 +504,7 @@
           </div>
 
           <div class="projects-grid" id="projects-grid">
+            <span class="avatar-target" data-section="projects"></span>
 
             <article class="project-card reveal-item" data-category="saas" data-delay="0">
               <div class="project-card-inner">
@@ -626,6 +664,116 @@
                 
                 <div class="project-actions">
                   <a href="https://gku.ac.in" target="_blank" rel="noopener noreferrer"
+                    class="project-link project-link-primary" aria-label="View live portal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                      <polyline points="15 3 21 3 21 9" />
+                      <line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                    Live Portal
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <article class="project-card reveal-item" data-category="fullstack" data-delay="250">
+              <div class="project-card-inner">
+                <div class="project-glow" aria-hidden="true" style="--glow-color: #06b6d4"></div>
+                <div class="project-scanner-line"></div>
+                <div class="project-corner top-left"></div>
+                <div class="project-corner bottom-right"></div>
+                
+                <div class="project-telemetry-header">
+                  <span>DEPLOY: SECURE_LIVE</span>
+                  <span>SYS_ID: #GKU_92</span>
+                </div>
+
+                <div class="project-header">
+                  <div class="project-icon-group">
+                    <div class="project-icon" style="--icon-bg: rgba(6,182,212,0.15); --icon-color: #06b6d4;">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                      </svg>
+                    </div>
+                    <span class="project-category-tag">Enterprise Web</span>
+                  </div>
+
+                  <div class="project-cyber-gauge">
+                    <svg viewBox="0 0 36 36" class="circular-chart cyan">
+                      <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                      <path class="circle" stroke-dasharray="92, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                      <text x="18" y="20.35" class="percentage">92%</text>
+                    </svg>
+                    <span class="gauge-label">COMPLEXITY</span>
+                  </div>
+                </div>
+
+                <h3 class="project-title">gkuonline.in</h3>
+                <p class="project-desc">Official distance and online education platform. Managed student registrations, dynamic course materials delivery, administrative dashboards, and online fee collection pipelines.</p>
+                
+                <div class="project-tech">
+                  <span>Laravel</span><span>PHP</span><span>MySQL</span><span>APIs</span><span>Student Portal</span>
+                </div>
+                
+                <div class="project-actions">
+                  <a href="https://www.gkuonline.in/" target="_blank" rel="noopener noreferrer"
+                    class="project-link project-link-primary" aria-label="View live portal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                      <polyline points="15 3 21 3 21 9" />
+                      <line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                    Live Portal
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <article class="project-card reveal-item" data-category="fullstack" data-delay="280">
+              <div class="project-card-inner">
+                <div class="project-glow" aria-hidden="true" style="--glow-color: #22c55e"></div>
+                <div class="project-scanner-line"></div>
+                <div class="project-corner top-left"></div>
+                <div class="project-corner bottom-right"></div>
+                
+                <div class="project-telemetry-header">
+                  <span>DEPLOY: SECURE_LIVE</span>
+                  <span>SYS_ID: #GKU_91</span>
+                </div>
+
+                <div class="project-header">
+                  <div class="project-icon-group">
+                    <div class="project-icon" style="--icon-bg: rgba(34,197,94,0.15); --icon-color: #22c55e;">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <polyline points="16 11 18 13 22 9" />
+                      </svg>
+                    </div>
+                    <span class="project-category-tag">Enterprise Web</span>
+                  </div>
+
+                  <div class="project-cyber-gauge">
+                    <svg viewBox="0 0 36 36" class="circular-chart emerald">
+                      <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                      <path class="circle" stroke-dasharray="91, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                      <text x="18" y="20.35" class="percentage">91%</text>
+                    </svg>
+                    <span class="gauge-label">COMPLEXITY</span>
+                  </div>
+                </div>
+
+                <h3 class="project-title">gku.adm.gurukashiuniversity.in</h3>
+                <p class="project-desc">Official GKU admissions platform. Built student registration portals, document upload verification pipelines, online counselling workflows, and secure payment integrations.</p>
+                
+                <div class="project-tech">
+                  <span>Laravel</span><span>PHP</span><span>MySQL</span><span>APIs</span><span>Razorpay</span>
+                </div>
+                
+                <div class="project-actions">
+                  <a href="https://gku.adm.gurukashiuniversity.in/" target="_blank" rel="noopener noreferrer"
                     class="project-link project-link-primary" aria-label="View live portal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                       <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -999,6 +1147,7 @@
           </div>
 
           <div class="achievements-grid">
+            <span class="avatar-target" data-section="achievements"></span>
             <!-- Awards -->
             <div class="achievements-col">
               <h3 class="achiev-col-title reveal-item">
@@ -1147,6 +1296,7 @@
           </div>
 
           <div class="contact-container">
+            <span class="avatar-target" data-section="contact"></span>
             <div class="contact-info reveal-item" data-delay="0">
               <div class="contact-signal-card">
                 <h3 class="signal-title">Signal Channels</h3>
